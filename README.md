@@ -1,5 +1,7 @@
 # 💶 Agente AI per la Finanza Agevolata
 
+[![Test](https://github.com/Micene22/agente-finanza-agevolata/actions/workflows/tests.yml/badge.svg)](https://github.com/Micene22/agente-finanza-agevolata/actions/workflows/tests.yml)
+
 Agente AI che aiuta uno studio di consulenza a rispondere alle imprese che chiedono
 quali **bandi e contributi a fondo perduto** possono ottenere.
 L'agente cerca i bandi compatibili, calcola i contributi e crea promemoria sulle scadenze,
@@ -49,6 +51,8 @@ agente.py       grafo LangGraph: nodi, frecce, approvazione del consulente + cha
 strumenti.py    i 3 strumenti (tool) chiamati dall'agente
 dati_finti.py   bandi inventati usati dalla demo
 app.py          interfaccia web Streamlit (chat impresa + pannello consulente)
+tests/          test pytest: strumenti e grafo con LLM simulato
+.github/        GitHub Actions: i test girano a ogni push
 ```
 
 ## Come provarlo
@@ -77,6 +81,19 @@ python agente.py
 Esempio di conversazione: *"Siamo la Rossi Srl, piccola impresa di manifattura a Palermo. Che bandi ci sono?"*
 → *"Con DIGI-PMI spenderemmo 8.000 euro, quanto prendiamo?"* → *"Create un promemoria per DIGI-PMI"*.
 
+## Test
+
+```bash
+pip install pytest
+pytest -v
+```
+
+- **Strumenti:** calcolo del contributo (percentuale, massimale, spesa minima, bando scaduto o inesistente),
+  filtri di ricerca per regione, dimensione e settore, urgenza, promemoria.
+- **Grafo:** con un LLM simulato (nessuna chiamata a Gemini, nessun costo) verificano che la bozza si fermi
+  in attesa del consulente, che quella approvata diventi la risposta e che quella corretta venga sostituita.
+- **CI:** GitHub Actions esegue i test a ogni push su `main`.
+
 ## Scelte di progetto
 
 - **Errori come informazioni:** se l'LLM passa un bando inesistente, lo strumento restituisce
@@ -92,7 +109,7 @@ Esempio di conversazione: *"Siamo la Rossi Srl, piccola impresa di manifattura a
 - [ ] Approvazione **prima** degli strumenti con effetti (es. `crea_promemoria`), non solo del messaggio finale
 - [ ] RAG con Qdrant sui testi di bandi pubblici reali
 - [ ] API FastAPI, Docker e deploy online
-- [ ] Test automatici (pytest) sugli strumenti
+- [x] Test automatici (pytest) su strumenti e grafo, con CI su GitHub Actions
 - [ ] Server MCP che espone gli strumenti
 - [ ] Modello locale (Ollama) per tenere i dati dentro lo studio
 - [ ] Monitoraggio di chiamate, tempi e costi dell'LLM
